@@ -1,0 +1,107 @@
+# NAE_Project
+clc
+clear
+
+%Pressure Drops 2017 in WC (inch of water)
+    PressureDropInitial2017 = [0.29 ; 0.30 ; 0.269 ; 0.276 ; 0.29; 0.27; 0.262; 0.274];
+
+    PressureDropTested2017 = [0.386; 0.454; 0.310 ; 0.290; 0.303 ; 0.285 ; 0.264 ; 0.272];
+%Converting these values to Pa (Pascals)
+    PressureDropInitial2017 = PressureDropInitial2017*248.84;
+    
+    PressureDropTested2017 = PressureDropTested2017 * 248.84;
+
+%Penetration results 2017 percentages (%)
+    PenetrationInitial2017 = [0.01; 0.01; 0.03; 0.01 ; 0.02; 0.01; 0.01 ; 0.01];
+
+    PenetrationTested2017 = [0.0104 ; 0.0558 ; 0.0245 ; 0.0058 ; 0.0142 ; 0.0088 ; 0.0137 ; 0.0126];
+    
+%Combining data
+    Pressure2017 = [PressureDropInitial2017,PressureDropTested2017];
+
+    Penetration2017 = [PenetrationInitial2017, PenetrationTested2017];
+
+    BFE2017 = [Pressure2017, Penetration2017]; %Overall data set for 2017 bacterial filter elements
+
+%Pressure Drops 2016 in Pa (Pascals)
+    PressureDropInitial2016 = [72.2 ; 74.7; 67.0; 68.7; 72.2; 72.2; 74.7; 67.2; 65.2; 68.2];
+
+    PressureDropTested2016 = [96.1; 95.3; 77.2; 72.2; 75.2; 81.7; 74.5; 71.0; 65.8; 67.7];
+
+%Penetration results 2016 percentages (%)
+    PenetrationInitial2016 = [0.01; 0.01; 0.03; 0.01; 0.02; 0.03; 0.0025; 0.01; 0.01; 0.01];
+    
+    PenetrationTested2016 = [0.0104; 0.0377; 0.0245; 0.0058; 0.0142; 0.0605; 0.0074; 0.0088; 0.0137; 0.0126];
+
+%Combining Data
+    Pressure2016 = [PressureDropInitial2016, PressureDropTested2016];
+    
+    Penetration2016 = [PenetrationInitial2016, PenetrationTested2016];
+    
+    BFE2016 = [Pressure2016, Penetration2016]; %Overall data set for 2016 bacterial filter elements
+    
+
+%Earth's atmospheric constituents percentages (%)
+ENitrogen = 78.0;
+EOxygen = 21.0;
+EArgon = 0.9;
+EMethane = 4.42E-4;
+EHelium = 1.299E-3;
+ECarbonDioxide = 0.093497;
+ENeon = 4.675E-3;
+EOzone = 1.0E-5;
+ENitrousOxide = 7.8E-5;
+
+AtmosphericEarthComposition = [ENitrogen;EOxygen;EArgon;ECarbonDioxide;ENeon;EHelium;EMethane;ENitrousOxide;EOzone];
+
+%Atmospheric Constituents aboard the ISS percentages (%)
+ISSNitrogen = 78.1;
+ISSMethane = 4.42E-4;
+ISSOxygen = 20.9;
+ISSCarbonDioxide = 0.036;
+ISSArgon = 0.93;
+      %Using source 4's ISS cabin air constituents' %'s
+%HOWEVER... there is 0.034% of the air not cited, so using source 1's MCA
+%(major constituent analyzer) data, that 0.034% must belong to: 
+
+%Using the ratio of hydrogen to water (1:8) and assuming the ISS has a 0%
+%humidity ratio...
+
+ISSHydrogen = (0.034 * .125);
+
+ISSWater = (0.034 * .875);
+    %Which gives us 100% of the atmospheric constituents aboard the ISS
+
+%Ventilation on the ISS
+VentilatorVolume = 3834; %in ft^3
+VentilationFlow = 400; %in cfm (cubic feet/minute);
+
+%ISS Internalized pressure volume
+InternalizedPressureVolume = 32333; %in ft^3
+
+%Assuming the relevant atmospheric constituents (Nitrogen, Oxygen, Methane, Carbon
+%Dioxide, Hydrogen and Water) occupy their respected percentages aboard the
+%ISS' ventilators...
+
+    VentilatorNitrogen = (ISSNitrogen/100) * VentilatorVolume;
+    %Nitrogen takes up 2.9905E3 ft^3...and for the rest...
+    %Ventilator
+    VentilatorOxygen = (ISSOxygen/100) * VentilatorVolume;
+    VentilatorCarbonDioxide = (ISSCarbonDioxide/100) * VentilatorVolume;
+    VentilatorArgon = (ISSArgon/100) * VentilatorVolume;
+    VentilatorHydrogen = (ISSHydrogen/100) * VentilatorVolume;
+    VentilatorWater = (ISSWater/100) * VentilatorVolume;
+    VentilatorMethane = (ISSMethane/100)*VentilatorVolume;
+    
+    VentilatorVolumes = [VentilatorNitrogen; VentilatorMethane; VentilatorOxygen; VentilatorCarbonDioxide; VentilatorArgon; VentilatorHydrogen; VentilatorWater];
+
+%Assuming the relevant atmospheric constituents (Nitrogen, Oxygen, Methane, Carbon
+%Dioxide, Hydrogen and Water) flow through the ventilators (BFEs) at a constant
+%rate..
+
+    Ventilation = VentilatorVolumes * VentilationFlow;
+    % Ventilator aboard the ISS consists of 6 BFEs w/ a flow of 70 cfm each
+    
+    VentilationBFE = Ventilation/6;
+    %The flow of major atmospheric constituents of one BFE
+    
